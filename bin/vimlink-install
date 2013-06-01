@@ -1,0 +1,26 @@
+#!/bin/bash
+source /usr/local/vimlink/bin/variables.sh
+
+mkdir -p $VIMLINK
+mkdir -p $BUILDDIR
+touch $MANIFEST
+
+while read repo; do
+  name=`basename $repo .git`
+  build=$BUILDDIR/$name
+  ! [ -d $build ] && git clone $repo $build > /dev/null 2>&1
+
+  for file in `find $build -name '*'`; do
+    [ $file == $build ] && continue
+    [ `dirname $file` == $build ] && continue
+    (echo $file | grep '.git' > /dev/null 2>&1) && continue
+
+    relative=${file#$build/}
+    dest=$INSTALLDIR/$relative
+    destdir=`dirname $dest`
+
+    mkdir -p $destdir
+    [ -d $file ] && continue
+    [ -e $dest ] || ln -s $file $dest
+  done
+done < $MANIFEST
