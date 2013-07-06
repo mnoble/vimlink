@@ -1,3 +1,9 @@
 #!/bin/bash
 CMD=$1 && shift
-which vimlink-$CMD > /dev/null 2>&1 && vimlink-$CMD $@ || echo "Command not found: vimlink-$CMD"
+
+if (which vimlink-$CMD > /dev/null 2>&1); then
+  vimlink-$CMD $@
+else
+  echo "Command not found: vimlink-$CMD"
+  exit 1
+fi

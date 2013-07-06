@@ -1,0 +1,19 @@
+#!/bin/bash
+source /usr/local/vimlink/bin/variables.sh
+
+PLUGINDIR=$BUILDDIR/$1
+shift
+
+[ ! -d $PLUGINDIR ] && echo "No such plugin" && exit 1
+
+for file in `find $PLUGINDIR -name '*'`; do
+  realpath=$INSTALLDIR/${file#$PLUGINDIR/}
+  basedir=`dirname $realpath`
+
+  [ $basedir == $INSTALLDIR ] && continue
+  [ $file == $PLUGINDIR ] && continue
+  [[ $file =~ \.git ]] && continue
+
+  [ -e $realpath ]  && rm -rf $realpath
+  [ -e $PLUGINDIR ] && rm -rf $PLUGINDIR
+done
